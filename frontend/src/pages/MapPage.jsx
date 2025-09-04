@@ -4,6 +4,9 @@ const MapPage = () => {
   const mapContainer = useRef(null);
 
   useEffect(() => {
+    let map;
+    let marker = null;
+
     // Load Mapbox GL JS script and CSS if not already loaded
     if (!window.mapboxgl) {
       const script = document.createElement("script");
@@ -26,29 +29,48 @@ const MapPage = () => {
     function createMap() {
       window.mapboxgl.accessToken =
         "pk.eyJ1Ijoid2VzbGV5bHVpIiwiYSI6ImNtZjRsNDl2NDA2bWoya29pOHUzcHFvaXoifQ.Np_6O32SHiCIaS8Q40rWSA";
-      new window.mapboxgl.Map({
+      map = new window.mapboxgl.Map({
         container: mapContainer.current,
         center: [-114.130081, 51.07811],
         zoom: 15,
         style: "mapbox://styles/mapbox/standard",
       });
+
+      map.on('click', function (e) {
+        const { lng, lat } = e.lngLat;
+        // Remove previous marker if exists
+        if (marker) {
+          marker.remove();
+        }
+        // Create a new marker
+        marker = new window.mapboxgl.Marker({
+          color: 'red',
+          scale: 0.8
+        })
+          .setLngLat([lng, lat])
+          .addTo(map);
+      });
     }
+    // Clean up on unmount
+    return () => {
+      if (map) map.remove();
+    };
   }, []);
 
   return (
     <div
       style={{
-        position: "absolute",
-        top: 0,
-        bottom: 0,
-        width: "100%",
+        position: "fixed",
+        inset: 0,
+        width: "100vw",
         height: "100vh",
+        overflow: "hidden",
       }}
     >
       <div
         ref={mapContainer}
         id="map"
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: "100vw", height: "100vh" }}
       />
     </div>
   );
