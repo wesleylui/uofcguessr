@@ -59,17 +59,6 @@ const GamePage = () => {
       >
         {isImageMode ? "Switch to Map Mode" : "Switch to Image Mode"}
       </button>
-      <Link
-        to="/"
-        style={{
-          marginTop: "2rem",
-          fontSize: "1.2rem",
-          color: "#007bff",
-          textDecoration: "underline",
-        }}
-      >
-        Back to Home
-      </Link>
     </div>
   );
 };
