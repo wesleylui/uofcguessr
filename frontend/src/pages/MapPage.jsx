@@ -36,7 +36,7 @@ const MapPage = () => {
         style: "mapbox://styles/mapbox/standard",
       });
 
-      map.on('click', function (e) {
+      map.on("click", function (e) {
         const { lng, lat } = e.lngLat;
         // Remove previous marker if exists
         if (marker) {
@@ -44,8 +44,8 @@ const MapPage = () => {
         }
         // Create a new marker
         marker = new window.mapboxgl.Marker({
-          color: 'red',
-          scale: 0.8
+          color: "red",
+          scale: 0.8,
         })
           .setLngLat([lng, lat])
           .addTo(map);
