@@ -1,6 +1,11 @@
 import React, { useEffect, useRef } from "react";
 
-const MapPage = () => {
+const MapboxMap = ({
+  style = {},
+  mapStyle = "mapbox://styles/mapbox/standard",
+  center = [-114.130081, 51.07811],
+  zoom = 15,
+}) => {
   const mapContainer = useRef(null);
 
   useEffect(() => {
@@ -31,9 +36,9 @@ const MapPage = () => {
         "pk.eyJ1Ijoid2VzbGV5bHVpIiwiYSI6ImNtZjRsNDl2NDA2bWoya29pOHUzcHFvaXoifQ.Np_6O32SHiCIaS8Q40rWSA";
       map = new window.mapboxgl.Map({
         container: mapContainer.current,
-        center: [-114.130081, 51.07811],
-        zoom: 15,
-        style: "mapbox://styles/mapbox/standard",
+        center,
+        zoom,
+        style: mapStyle,
       });
 
       map.on("click", function (e) {
@@ -55,25 +60,9 @@ const MapPage = () => {
     return () => {
       if (map) map.remove();
     };
-  }, []);
+  }, [center, zoom, mapStyle]);
 
-  return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        width: "100vw",
-        height: "100vh",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        ref={mapContainer}
-        id="map"
-        style={{ width: "100vw", height: "100vh" }}
-      />
-    </div>
-  );
+  return <div ref={mapContainer} id="map" style={style} />;
 };
 
-export default MapPage;
+export default MapboxMap;
