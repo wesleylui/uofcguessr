@@ -1,32 +1,40 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleStartGame = () => {
-        navigate('/game');
-    };
+  const handleStartGame = () => {
+    navigate("/game");
+  };
 
-    return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-            <h1 style={{ fontSize: '4rem', marginBottom: '2rem' }}>UofC Guessr</h1>
-            <button
-                onClick={handleStartGame}
-                style={{
-                    padding: '1rem 2rem',
-                    fontSize: '1.5rem',
-                    borderRadius: '8px',
-                    border: 'none',
-                    backgroundColor: '#007bff',
-                    color: '#fff',
-                    cursor: 'pointer'
-                }}
-            >
-                Start Game
-            </button>
-        </div>
-    );
+  return (
+    <>
+      <header>
+        <h1>UofC Guessr</h1>
+      </header>
+      <main>
+        <section>
+          <p>
+            Guess where you are on the University of Calgary campus based on a
+            random view. Make your best guess and see how close you are.
+          </p>
+          <button onClick={handleStartGame}>Start Game</button>
+        </section>
+        <section aria-label="How to play">
+          <h2>How to play</h2>
+          <ol>
+            <li>Look around to spot campus landmarks and hints.</li>
+            <li>Click the map where you think the location is.</li>
+            <li>Submit your guess and check your score.</li>
+          </ol>
+        </section>
+      </main>
+      <footer>
+        <small>Wesley Lui.</small>
+      </footer>
+    </>
+  );
 };
 
 export default LandingPage;
