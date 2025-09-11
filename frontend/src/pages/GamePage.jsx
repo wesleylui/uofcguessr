@@ -16,6 +16,7 @@ const GamePage = () => {
   const [rounds] = useState(() => getRandomLocations(3));
   const [roundIndex, setRoundIndex] = useState(0);
   const [phase, setPhase] = useState(PHASES.COUNTDOWN);
+  const [toggleEnabled, setToggleEnabled] = useState(false);
   const [, setGuesses] = useState([]); // {lng,lat}
 
   const current = rounds[roundIndex];
@@ -23,7 +24,10 @@ const GamePage = () => {
   const handleCountdownComplete = useCallback(() => {
     setPhase(PHASES.IMAGE);
     // brief image reveal before map step
-    setTimeout(() => setPhase(PHASES.MAP), 2000);
+    setTimeout(() => {
+      setPhase(PHASES.MAP);
+      setToggleEnabled(true);
+    }, 2000);
   }, []);
 
   const handleMapSelect = useCallback(
@@ -42,13 +46,20 @@ const GamePage = () => {
     if (roundIndex + 1 < rounds.length) {
       setRoundIndex((i) => i + 1);
       setPhase(PHASES.COUNTDOWN);
+      setToggleEnabled(false);
     } else {
       // restart for now
       setRoundIndex(0);
       setGuesses([]);
       setPhase(PHASES.COUNTDOWN);
+      setToggleEnabled(false);
     }
   }, [roundIndex, rounds.length]);
+
+  const handleToggleView = useCallback(() => {
+    if (!toggleEnabled) return;
+    setPhase((p) => (p === PHASES.MAP ? PHASES.IMAGE : PHASES.MAP));
+  }, [toggleEnabled]);
 
   return (
     <div
@@ -68,6 +79,12 @@ const GamePage = () => {
       <div>
         Round {roundIndex + 1} / {rounds.length}
       </div>
+
+      {toggleEnabled && (phase === PHASES.IMAGE || phase === PHASES.MAP) && (
+        <button onClick={handleToggleView}>
+          {phase === PHASES.MAP ? "Show Image" : "Show Map"}
+        </button>
+      )}
 
       {phase === PHASES.COUNTDOWN && (
         <Countdown durationSeconds={3} onComplete={handleCountdownComplete} />
