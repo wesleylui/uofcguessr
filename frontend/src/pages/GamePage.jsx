@@ -18,6 +18,7 @@ const GamePage = () => {
   const [phase, setPhase] = useState(PHASES.COUNTDOWN);
   const [toggleEnabled, setToggleEnabled] = useState(false);
   const [, setGuesses] = useState([]); // {lng,lat}
+  const [currentGuess, setCurrentGuess] = useState(null); // {lng, lat}
 
   const current = rounds[roundIndex];
 
@@ -30,29 +31,37 @@ const GamePage = () => {
     }, 2000);
   }, []);
 
-  const handleMapSelect = useCallback(
-    ({ lng, lat }) => {
-      setGuesses((prev) => {
-        const next = [...prev];
-        next[roundIndex] = { lng, lat };
-        return next;
-      });
-      setPhase(PHASES.RESULT);
-    },
-    [roundIndex]
-  );
+  const handleMapSelect = useCallback(({ lng, lat, hasMarker }) => {
+    if (hasMarker) {
+      setCurrentGuess({ lng, lat });
+    }
+  }, []);
+
+  const handleSubmitGuess = useCallback(() => {
+    if (!currentGuess) return;
+    
+    setGuesses((prev) => {
+      const next = [...prev];
+      next[roundIndex] = currentGuess;
+      return next;
+    });
+    setCurrentGuess(null);
+    setPhase(PHASES.RESULT);
+  }, [currentGuess, roundIndex]);
 
   const handleNextRound = useCallback(() => {
     if (roundIndex + 1 < rounds.length) {
       setRoundIndex((i) => i + 1);
       setPhase(PHASES.COUNTDOWN);
       setToggleEnabled(false);
+      setCurrentGuess(null);
     } else {
       // restart for now
       setRoundIndex(0);
       setGuesses([]);
       setPhase(PHASES.COUNTDOWN);
       setToggleEnabled(false);
+      setCurrentGuess(null);
     }
   }, [roundIndex, rounds.length]);
 
@@ -99,18 +108,37 @@ const GamePage = () => {
       )}
 
       {phase === PHASES.MAP && (
-        <MapboxMap
-          onSelect={handleMapSelect}
-          center={centerUofC}
-          zoom={15}
-          style={{
-            width: "80vw",
-            height: "60vh",
-            borderRadius: "16px",
-            boxShadow: "0 2px 16px rgba(0,0,0,0.12)",
-            overflow: "hidden",
-          }}
-        />
+        <>
+          <MapboxMap
+            onSelect={handleMapSelect}
+            center={centerUofC}
+            zoom={15}
+            style={{
+              width: "80vw",
+              height: "60vh",
+              borderRadius: "16px",
+              boxShadow: "0 2px 16px rgba(0,0,0,0.12)",
+              overflow: "hidden",
+            }}
+          />
+          {currentGuess && (
+            <button 
+              onClick={handleSubmitGuess}
+              style={{
+                marginTop: "1rem",
+                padding: "0.75rem 1.5rem",
+                fontSize: "1.1rem",
+                backgroundColor: "#28a745",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              Submit Guess
+            </button>
+          )}
+        </>
       )}
 
       {phase === PHASES.RESULT && (

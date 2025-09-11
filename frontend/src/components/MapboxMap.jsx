@@ -48,7 +48,7 @@ const MapboxMap = ({
         if (marker) {
           marker.remove();
         }
-        // Create a new marker
+        // Create a new marker with red circle dot style
         marker = new window.mapboxgl.Marker({
           color: "red",
           scale: 0.8,
@@ -57,7 +57,7 @@ const MapboxMap = ({
           .addTo(map);
 
         if (typeof onSelect === "function") {
-          onSelect({ lng, lat });
+          onSelect({ lng, lat, hasMarker: true });
         }
       });
     }
