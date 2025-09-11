@@ -4,36 +4,36 @@ export const uofcLocations = [
     id: 1,
     name: "MacEwan Hall",
     coordinates: [-114.130081, 51.07811], // [longitude, latitude]
-    placeholderImage:
-      "https://via.placeholder.com/400x300/4A90E2/FFFFFF?text=MacEwan+Hall",
+    image:
+      "https://cdn-images.dzcdn.net/images/cover/2cbda488ba28c815f6514ca4ff28783e/0x1900-000000-80-0-0.jpg",
   },
   {
     id: 2,
     name: "Science Theatres",
     coordinates: [-114.1285, 51.0792],
-    placeholderImage:
-      "https://via.placeholder.com/400x300/7ED321/FFFFFF?text=Science+Theatres",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXl6k2Nr985b5UM33QWnI6QAKWxV7DwE67aw&s",
   },
   {
     id: 3,
     name: "Taylor Family Digital Library",
     coordinates: [-114.1295, 51.0775],
-    placeholderImage:
-      "https://via.placeholder.com/400x300/F5A623/FFFFFF?text=Taylor+Library",
+    image:
+      "https://static.wikia.nocookie.net/keshi/images/4/45/Gabriel_album_cover.jpg/revision/latest/scale-to-width-down/1200?cb=20220323064224",
   },
   {
     id: 4,
     name: "Kinesiology Building",
     coordinates: [-114.1278, 51.0801],
-    placeholderImage:
-      "https://via.placeholder.com/400x300/BD10E0/FFFFFF?text=Kinesiology+Building",
+    image:
+      "https://cdn-images.dzcdn.net/images/cover/c93a4c15000ea66fe1e8418640923dc3/1900x1900-000000-80-0-0.jpg",
   },
   {
     id: 5,
     name: "Engineering Building",
     coordinates: [-114.1312, 51.0798],
-    placeholderImage:
-      "https://via.placeholder.com/400x300/50E3C2/FFFFFF?text=Engineering+Building",
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNgmRYdNTvlbPyATjR6x_3nzpd6OJ8jc7Clw&s",
   },
 ];
 

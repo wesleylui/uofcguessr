@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-const Countdown = () => {
-  const [count, setCount] = useState(3);
+const Countdown = ({ durationSeconds = 3, onComplete }) => {
+  const [count, setCount] = useState(durationSeconds);
   const [showGo, setShowGo] = useState(false);
 
   useEffect(() => {
@@ -10,12 +10,21 @@ const Countdown = () => {
       return () => clearTimeout(timer);
     } else {
       setShowGo(true);
+      if (typeof onComplete === "function") {
+        const t = setTimeout(() => onComplete(), 300);
+        return () => clearTimeout(t);
+      }
     }
-  }, [count]);
+  }, [count, onComplete]);
+
+  useEffect(() => {
+    setCount(durationSeconds);
+    setShowGo(false);
+  }, [durationSeconds]);
 
   return (
-    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-      {showGo ? 'Go!' : count}
+    <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>
+      {showGo ? "Go!" : count}
     </div>
   );
 };

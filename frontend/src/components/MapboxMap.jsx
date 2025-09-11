@@ -5,6 +5,7 @@ const MapboxMap = ({
   mapStyle = "mapbox://styles/mapbox/standard",
   center = [-114.130081, 51.07811],
   zoom = 15,
+  onSelect,
 }) => {
   const mapContainer = useRef(null);
 
@@ -54,13 +55,17 @@ const MapboxMap = ({
         })
           .setLngLat([lng, lat])
           .addTo(map);
+
+        if (typeof onSelect === "function") {
+          onSelect({ lng, lat });
+        }
       });
     }
     // Clean up on unmount
     return () => {
       if (map) map.remove();
     };
-  }, [center, zoom, mapStyle]);
+  }, [center, zoom, mapStyle, onSelect]);
 
   return <div ref={mapContainer} id="map" style={style} />;
 };
