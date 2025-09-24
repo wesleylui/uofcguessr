@@ -1,62 +1,60 @@
 import React from "react";
-import ResultBox from "./ResultBox";
 
-const ResultDisplay = ({ correctLocation, playerGuess }) => {
-  const imageStyle = {
-    width: "100%",
-    height: "200px",
+const ResultDisplay = ({ correctLocation, playerGuess, distance, score }) => {
+  const campusImageStyle = {
+    width: "80vw",
+    height: "60vh",
     objectFit: "cover",
-    borderRadius: "8px",
-    marginBottom: "0.5rem",
+    borderRadius: "16px",
+    boxShadow: "0 2px 16px rgba(0,0,0,0.12)",
+    marginBottom: "1rem",
   };
 
-  const placeholderStyle = {
-    width: "100%",
-    height: "200px",
-    backgroundColor: "#e9ecef",
-    borderRadius: "8px",
-    marginBottom: "0.5rem",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "1.2rem",
-    color: "#6c757d",
+  const locationInfoStyle = {
+    textAlign: "center",
+    marginBottom: "1rem",
   };
 
-  const textStyle = {
-    margin: "0",
+  const locationNameStyle = {
+    fontSize: "1.5rem",
     fontWeight: "bold",
-    fontSize: "1.1rem",
+    margin: "0.5rem 0",
+    color: "#333",
   };
 
-  const coordStyle = {
-    margin: "0",
+  const guessInfoStyle = {
     fontSize: "1rem",
+    color: "#666",
+    margin: "0.25rem 0",
+  };
+
+  const scoreStyle = {
+    fontSize: "1.1rem",
+    color: "#000",
+    margin: "0.25rem 0",
   };
 
   return (
-    <div style={{ display: "flex", gap: "2rem", marginBottom: "2rem" }}>
-      {/* Correct Answer Box */}
-      <ResultBox title="Correct Answer" titleColor="#28a745">
-        <img
-          src={correctLocation.placeholderImage}
-          alt={correctLocation.name}
-          style={imageStyle}
-        />
-        <p style={textStyle}>
-          {correctLocation.name}
+    <div style={{ textAlign: "center" }}>
+      {/* UofC Campus Image */}
+      <img
+        src={correctLocation.image || correctLocation.placeholderImage}
+        alt={correctLocation.name}
+        style={campusImageStyle}
+      />
+      
+      {/* Location Information */}
+      <div style={locationInfoStyle}>
+        <h2 style={locationNameStyle}>
+          Answer: {correctLocation.name}
+        </h2>
+        <p style={guessInfoStyle}>
+          Your guess was {distance.toFixed(2)} meters away
         </p>
-      </ResultBox>
-
-      {/* Player Guess Box */}
-      <ResultBox title="Your Guess" titleColor="#007bff">
-        <div style={placeholderStyle}>
-          📍 Map Location
-        </div>
-        <p style={coordStyle}>
-          Coordinates: {playerGuess.lng.toFixed(6)}, {playerGuess.lat.toFixed(6)}
+        <p style={scoreStyle}>
+          Score: {score} points
         </p>
-      </ResultBox>
+      </div>
     </div>
   );
 };

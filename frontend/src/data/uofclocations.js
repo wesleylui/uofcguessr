@@ -26,7 +26,7 @@ export const uofcLocations = [
     name: "Kinesiology Building",
     coordinates: [-114.1278, 51.0801],
     image:
-      "https://cdn-images.dzcdn.net/images/cover/c93a4c15000ea66fe1e8418640923dc3/1900x1900-000000-80-0-0.jpg",
+      "https://i.pinimg.com/736x/b2/60/94/b26094970505bcd59c2e5fe8b6f41cf0.jpg",
   },
   {
     id: 5,

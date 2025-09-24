@@ -5,7 +5,11 @@ import ResultDisplay from "../components/ResultDisplay";
 import Button from "../components/Button";
 import { getRandomLocations } from "../data/uofclocations";
 import { calculateGuessResult } from "../utils/gameUtils";
-import { GAME_PHASES, CENTER_UOFC, GAME_CONFIG } from "../constants/gameConstants";
+import {
+  GAME_PHASES,
+  CENTER_UOFC,
+  GAME_CONFIG,
+} from "../constants/gameConstants";
 
 const GamePage = () => {
   const [rounds] = useState(() => getRandomLocations(GAME_CONFIG.totalRounds));
@@ -41,7 +45,7 @@ const GamePage = () => {
 
   const handleSubmitGuess = useCallback(() => {
     if (!currentGuess) return;
-    
+
     setLastGuess(currentGuess); // Store the guess for results display
     setGuesses((prev) => {
       const next = [...prev];
@@ -70,7 +74,9 @@ const GamePage = () => {
 
   const handleToggleView = useCallback(() => {
     if (!toggleEnabled) return;
-    setPhase((p) => (p === GAME_PHASES.MAP ? GAME_PHASES.IMAGE : GAME_PHASES.MAP));
+    setPhase((p) =>
+      p === GAME_PHASES.MAP ? GAME_PHASES.IMAGE : GAME_PHASES.MAP
+    );
   }, [toggleEnabled]);
 
   return (
@@ -92,14 +98,18 @@ const GamePage = () => {
         Round {roundIndex + 1} / {rounds.length}
       </div>
 
-      {toggleEnabled && (phase === GAME_PHASES.IMAGE || phase === GAME_PHASES.MAP) && (
-        <Button onClick={handleToggleView} variant="secondary">
-          {phase === GAME_PHASES.MAP ? "Show Image" : "Show Map"}
-        </Button>
-      )}
+      {toggleEnabled &&
+        (phase === GAME_PHASES.IMAGE || phase === GAME_PHASES.MAP) && (
+          <Button onClick={handleToggleView} variant="secondary">
+            {phase === GAME_PHASES.MAP ? "Show Image" : "Show Map"}
+          </Button>
+        )}
 
       {phase === GAME_PHASES.COUNTDOWN && (
-        <Countdown durationSeconds={GAME_CONFIG.countdownDuration} onComplete={handleCountdownComplete} />
+        <Countdown
+          durationSeconds={GAME_CONFIG.countdownDuration}
+          onComplete={handleCountdownComplete}
+        />
       )}
 
       {phase === GAME_PHASES.IMAGE && (
@@ -125,7 +135,7 @@ const GamePage = () => {
             }}
           />
           {currentGuess && (
-            <Button 
+            <Button
               onClick={handleSubmitGuess}
               variant="success"
               style={{ marginTop: "1rem" }}
@@ -138,20 +148,14 @@ const GamePage = () => {
 
       {phase === GAME_PHASES.RESULT && lastGuess && guessResult && (
         <div style={{ textAlign: "center" }}>
-          <div style={{ marginBottom: "1rem", color: "#000000" }}>
-            <p style={{ margin: "0.25rem 0", fontSize: "1.1rem" }}>
-              Distance: {guessResult.distance.toFixed(2)} meters
-            </p>
-            <p style={{ margin: "0.25rem 0", fontSize: "1.1rem" }}>
-              Score: {guessResult.score} points
-            </p>
-          </div>
           <ResultDisplay
             correctLocation={current}
             playerGuess={lastGuess}
+            distance={guessResult.distance}
+            score={guessResult.score}
           />
-          <Button 
-            onClick={handleNextRound} 
+          <Button
+            onClick={handleNextRound}
             variant="primary"
             style={{ marginTop: "1rem" }}
           >
