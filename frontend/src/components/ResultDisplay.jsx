@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useEffect, useRef, useCallback } from "react";
+import MapboxMap from "./MapboxMap";
+import { CENTER_UOFC } from "../constants/gameConstants";
 
 const ResultDisplay = ({ correctLocation, playerGuess, distance, score }) => {
-  const campusImageStyle = {
+  const mapRef = useRef(null);
+
+  const mapStyle = {
     width: "80vw",
     height: "60vh",
-    objectFit: "cover",
     borderRadius: "16px",
     boxShadow: "0 2px 16px rgba(0,0,0,0.12)",
+    overflow: "hidden",
     marginBottom: "1rem",
   };
 
@@ -34,13 +38,52 @@ const ResultDisplay = ({ correctLocation, playerGuess, distance, score }) => {
     margin: "0.25rem 0",
   };
 
+  const handleMapLoad = useCallback((map) => {
+    mapRef.current = map;
+    
+    // Add green marker for correct location
+    const correctMarker = new window.mapboxgl.Marker({
+      color: "#28a745", // Green color
+      scale: 0.8,
+    })
+      .setLngLat(correctLocation.coordinates)
+      .addTo(map);
+
+    // Add red marker for player's guess
+    const guessMarker = new window.mapboxgl.Marker({
+      color: "#dc3545", // Red color
+      scale: 0.8,
+    })
+      .setLngLat([playerGuess.lng, playerGuess.lat])
+      .addTo(map);
+
+    // Store markers for cleanup
+    mapRef.current.correctMarker = correctMarker;
+    mapRef.current.guessMarker = guessMarker;
+  }, [correctLocation.coordinates, playerGuess.lng, playerGuess.lat]);
+
+  useEffect(() => {
+    // Cleanup markers when component unmounts
+    return () => {
+      if (mapRef.current && mapRef.current.correctMarker) {
+        mapRef.current.correctMarker.remove();
+      }
+      if (mapRef.current && mapRef.current.guessMarker) {
+        mapRef.current.guessMarker.remove();
+      }
+    };
+  }, []);
+
   return (
     <div style={{ textAlign: "center" }}>
-      {/* UofC Campus Image */}
-      <img
-        src={correctLocation.image || correctLocation.placeholderImage}
-        alt={correctLocation.name}
-        style={campusImageStyle}
+      {/* UofC Campus Map */}
+      <MapboxMap
+        ref={mapRef}
+        center={CENTER_UOFC}
+        zoom={15}
+        style={mapStyle}
+        disableClick={true}
+        onMapLoad={handleMapLoad}
       />
       
       {/* Location Information */}

@@ -112,7 +112,7 @@ const GamePage = () => {
         />
       )}
 
-      {phase === GAME_PHASES.IMAGE && (
+      {phase === GAME_PHASES.IMAGE && current && (
         <img
           src={current.image || current.placeholderImage}
           alt={current.name}
