@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
+import { DEFAULT_MAP_CONFIG, MAPBOX_TOKEN, MAPBOX_VERSION } from "../constants/gameConstants";
 
 const MapboxMap = ({
   style = {},
-  mapStyle = "mapbox://styles/mapbox/standard",
-  center = [-114.130081, 51.07811],
-  zoom = 15,
+  mapStyle = DEFAULT_MAP_CONFIG.style,
+  center,
+  zoom = DEFAULT_MAP_CONFIG.zoom,
   onSelect,
 }) => {
   const mapContainer = useRef(null);
@@ -16,12 +17,12 @@ const MapboxMap = ({
     // Load Mapbox GL JS script and CSS if not already loaded
     if (!window.mapboxgl) {
       const script = document.createElement("script");
-      script.src = "https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.js";
+      script.src = `https://api.mapbox.com/mapbox-gl-js/${MAPBOX_VERSION}/mapbox-gl.js`;
       script.async = true;
       document.body.appendChild(script);
 
       const link = document.createElement("link");
-      link.href = "https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.css";
+      link.href = `https://api.mapbox.com/mapbox-gl-js/${MAPBOX_VERSION}/mapbox-gl.css`;
       link.rel = "stylesheet";
       document.head.appendChild(link);
 
@@ -33,8 +34,7 @@ const MapboxMap = ({
     }
 
     function createMap() {
-      window.mapboxgl.accessToken =
-        "pk.eyJ1Ijoid2VzbGV5bHVpIiwiYSI6ImNtZjRsNDl2NDA2bWoya29pOHUzcHFvaXoifQ.Np_6O32SHiCIaS8Q40rWSA";
+      window.mapboxgl.accessToken = MAPBOX_TOKEN;
       map = new window.mapboxgl.Map({
         container: mapContainer.current,
         center,

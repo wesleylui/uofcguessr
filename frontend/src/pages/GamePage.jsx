@@ -1,53 +1,16 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import MapboxMap from "../components/MapboxMap";
 import Countdown from "../components/Countdown";
 import ResultDisplay from "../components/ResultDisplay";
+import Button from "../components/Button";
 import { getRandomLocations } from "../data/uofclocations";
-
-const centerUofC = [-114.130081, 51.07811];
-
-const PHASES = {
-  COUNTDOWN: "COUNTDOWN",
-  IMAGE: "IMAGE",
-  MAP: "MAP",
-  RESULT: "RESULT",
-};
-
-// Helper function to calculate distance between two points (Haversine formula)
-function calculateDistance(coord1, coord2) {
-  const [lng1, lat1] = coord1;
-  const [lng2, lat2] = coord2;
-
-  const R = 6371000; // Earth's radius in meters
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // Distance in meters
-}
-
-// Helper function to calculate score based on distance
-function calculateScore(distance) {
-  // Max score: 5000 points
-  // Decreases with distance
-  if (distance < 10) return 5000; // Perfect guess
-  if (distance < 100) return 4500; // Very close
-  if (distance < 500) return 4000; // Close
-  if (distance < 1000) return 3000; // Good
-  if (distance < 2000) return 2000; // Fair
-  if (distance < 5000) return 1000; // Poor
-  return Math.max(0, 5000 - Math.floor(distance / 10)); // Very poor
-}
+import { calculateGuessResult } from "../utils/gameUtils";
+import { GAME_PHASES, CENTER_UOFC, GAME_CONFIG } from "../constants/gameConstants";
 
 const GamePage = () => {
-  const [rounds] = useState(() => getRandomLocations(3));
+  const [rounds] = useState(() => getRandomLocations(GAME_CONFIG.totalRounds));
   const [roundIndex, setRoundIndex] = useState(0);
-  const [phase, setPhase] = useState(PHASES.COUNTDOWN);
+  const [phase, setPhase] = useState(GAME_PHASES.COUNTDOWN);
   const [toggleEnabled, setToggleEnabled] = useState(false);
   const [, setGuesses] = useState([]); // {lng,lat}
   const [currentGuess, setCurrentGuess] = useState(null); // {lng, lat}
@@ -55,13 +18,19 @@ const GamePage = () => {
 
   const current = rounds[roundIndex];
 
+  // Calculate result once and memoize it to avoid repeated calculations
+  const guessResult = useMemo(() => {
+    if (!lastGuess || !current) return null;
+    return calculateGuessResult(current, lastGuess);
+  }, [current, lastGuess]);
+
   const handleCountdownComplete = useCallback(() => {
-    setPhase(PHASES.IMAGE);
+    setPhase(GAME_PHASES.IMAGE);
     // brief image reveal before map step
     setTimeout(() => {
-      setPhase(PHASES.MAP);
+      setPhase(GAME_PHASES.MAP);
       setToggleEnabled(true);
-    }, 2000);
+    }, GAME_CONFIG.imageDisplayDuration);
   }, []);
 
   const handleMapSelect = useCallback(({ lng, lat, hasMarker }) => {
@@ -80,20 +49,20 @@ const GamePage = () => {
       return next;
     });
     setCurrentGuess(null);
-    setPhase(PHASES.RESULT);
+    setPhase(GAME_PHASES.RESULT);
   }, [currentGuess, roundIndex]);
 
   const handleNextRound = useCallback(() => {
     if (roundIndex + 1 < rounds.length) {
       setRoundIndex((i) => i + 1);
-      setPhase(PHASES.COUNTDOWN);
+      setPhase(GAME_PHASES.COUNTDOWN);
       setToggleEnabled(false);
       setCurrentGuess(null);
     } else {
       // restart for now
       setRoundIndex(0);
       setGuesses([]);
-      setPhase(PHASES.COUNTDOWN);
+      setPhase(GAME_PHASES.COUNTDOWN);
       setToggleEnabled(false);
       setCurrentGuess(null);
     }
@@ -101,7 +70,7 @@ const GamePage = () => {
 
   const handleToggleView = useCallback(() => {
     if (!toggleEnabled) return;
-    setPhase((p) => (p === PHASES.MAP ? PHASES.IMAGE : PHASES.MAP));
+    setPhase((p) => (p === GAME_PHASES.MAP ? GAME_PHASES.IMAGE : GAME_PHASES.MAP));
   }, [toggleEnabled]);
 
   return (
@@ -123,17 +92,17 @@ const GamePage = () => {
         Round {roundIndex + 1} / {rounds.length}
       </div>
 
-      {toggleEnabled && (phase === PHASES.IMAGE || phase === PHASES.MAP) && (
-        <button onClick={handleToggleView}>
-          {phase === PHASES.MAP ? "Show Image" : "Show Map"}
-        </button>
+      {toggleEnabled && (phase === GAME_PHASES.IMAGE || phase === GAME_PHASES.MAP) && (
+        <Button onClick={handleToggleView} variant="secondary">
+          {phase === GAME_PHASES.MAP ? "Show Image" : "Show Map"}
+        </Button>
       )}
 
-      {phase === PHASES.COUNTDOWN && (
-        <Countdown durationSeconds={3} onComplete={handleCountdownComplete} />
+      {phase === GAME_PHASES.COUNTDOWN && (
+        <Countdown durationSeconds={GAME_CONFIG.countdownDuration} onComplete={handleCountdownComplete} />
       )}
 
-      {phase === PHASES.IMAGE && (
+      {phase === GAME_PHASES.IMAGE && (
         <img
           src={current.image || current.placeholderImage}
           alt={current.name}
@@ -141,11 +110,11 @@ const GamePage = () => {
         />
       )}
 
-      {phase === PHASES.MAP && (
+      {phase === GAME_PHASES.MAP && (
         <>
           <MapboxMap
             onSelect={handleMapSelect}
-            center={centerUofC}
+            center={CENTER_UOFC}
             zoom={15}
             style={{
               width: "80vw",
@@ -156,52 +125,38 @@ const GamePage = () => {
             }}
           />
           {currentGuess && (
-            <button 
+            <Button 
               onClick={handleSubmitGuess}
-              style={{
-                marginTop: "1rem",
-                padding: "0.75rem 1.5rem",
-                fontSize: "1.1rem",
-                backgroundColor: "#28a745",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
+              variant="success"
+              style={{ marginTop: "1rem" }}
             >
               Submit Guess
-            </button>
+            </Button>
           )}
         </>
       )}
 
-      {phase === PHASES.RESULT && lastGuess && (
+      {phase === GAME_PHASES.RESULT && lastGuess && guessResult && (
         <div style={{ textAlign: "center" }}>
           <div style={{ marginBottom: "1rem", color: "#000000" }}>
-            <p style={{ margin: "0.25rem 0", fontSize: "1.1rem" }}>Distance: {Math.round(calculateDistance(current.coordinates, [lastGuess.lng, lastGuess.lat]))} meters</p>
-            <p style={{ margin: "0.25rem 0", fontSize: "1.1rem" }}>Score: {calculateScore(calculateDistance(current.coordinates, [lastGuess.lng, lastGuess.lat]))} points</p>
+            <p style={{ margin: "0.25rem 0", fontSize: "1.1rem" }}>
+              Distance: {guessResult.distance.toFixed(2)} meters
+            </p>
+            <p style={{ margin: "0.25rem 0", fontSize: "1.1rem" }}>
+              Score: {guessResult.score} points
+            </p>
           </div>
           <ResultDisplay
             correctLocation={current}
             playerGuess={lastGuess}
-            distance={calculateDistance(current.coordinates, [lastGuess.lng, lastGuess.lat])}
-            score={calculateScore(calculateDistance(current.coordinates, [lastGuess.lng, lastGuess.lat]))}
           />
-          <button 
+          <Button 
             onClick={handleNextRound} 
-            style={{ 
-              marginTop: "1rem",
-              padding: "0.75rem 1.5rem",
-              fontSize: "1.1rem",
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-            }}
+            variant="primary"
+            style={{ marginTop: "1rem" }}
           >
             {roundIndex + 1 < rounds.length ? "Next Round" : "Play Again"}
-          </button>
+          </Button>
         </div>
       )}
     </div>

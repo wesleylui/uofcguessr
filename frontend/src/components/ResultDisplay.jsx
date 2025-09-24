@@ -1,72 +1,62 @@
 import React from "react";
+import ResultBox from "./ResultBox";
 
-const ResultDisplay = ({ correctLocation, playerGuess, distance, score }) => {
+const ResultDisplay = ({ correctLocation, playerGuess }) => {
+  const imageStyle = {
+    width: "100%",
+    height: "200px",
+    objectFit: "cover",
+    borderRadius: "8px",
+    marginBottom: "0.5rem",
+  };
+
+  const placeholderStyle = {
+    width: "100%",
+    height: "200px",
+    backgroundColor: "#e9ecef",
+    borderRadius: "8px",
+    marginBottom: "0.5rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "1.2rem",
+    color: "#6c757d",
+  };
+
+  const textStyle = {
+    margin: "0",
+    fontWeight: "bold",
+    fontSize: "1.1rem",
+  };
+
+  const coordStyle = {
+    margin: "0",
+    fontSize: "1rem",
+  };
+
   return (
     <div style={{ display: "flex", gap: "2rem", marginBottom: "2rem" }}>
       {/* Correct Answer Box */}
-      <div
-        style={{
-          border: "2px solid #6c757d",
-          borderRadius: "12px",
-          padding: "1rem",
-          backgroundColor: "#ffffff",
-          minWidth: "300px",
-          textAlign: "center",
-        }}
-      >
-        <h3 style={{ color: "#28a745", margin: "0 0 0.5rem 0" }}>
-          Correct Answer
-        </h3>
+      <ResultBox title="Correct Answer" titleColor="#28a745">
         <img
           src={correctLocation.placeholderImage}
           alt={correctLocation.name}
-          style={{
-            width: "100%",
-            height: "200px",
-            objectFit: "cover",
-            borderRadius: "8px",
-            marginBottom: "0.5rem",
-          }}
+          style={imageStyle}
         />
-        <p style={{ margin: "0", fontWeight: "bold", fontSize: "1.1rem" }}>
+        <p style={textStyle}>
           {correctLocation.name}
         </p>
-      </div>
+      </ResultBox>
 
       {/* Player Guess Box */}
-      <div
-        style={{
-          border: "2px solid #6c757d",
-          borderRadius: "12px",
-          padding: "1rem",
-          backgroundColor: "#ffffff",
-          minWidth: "300px",
-          textAlign: "center",
-        }}
-      >
-        <h3 style={{ color: "#007bff", margin: "0 0 0.5rem 0" }}>
-          Your Guess
-        </h3>
-        <div
-          style={{
-            width: "100%",
-            height: "200px",
-            backgroundColor: "#e9ecef",
-            borderRadius: "8px",
-            marginBottom: "0.5rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "1.2rem",
-            color: "#6c757d",
-          }}
-        >
+      <ResultBox title="Your Guess" titleColor="#007bff">
+        <div style={placeholderStyle}>
           📍 Map Location
         </div>
-        <p style={{ margin: "0", fontSize: "1rem" }}>
+        <p style={coordStyle}>
           Coordinates: {playerGuess.lng.toFixed(6)}, {playerGuess.lat.toFixed(6)}
         </p>
-      </div>
+      </ResultBox>
     </div>
   );
 };
